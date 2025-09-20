@@ -10,16 +10,37 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setIsLoading(true);
+    
     try {
       await signIn(email, password);
-      navigate("/");
-    } catch (error) {
-      setError("Invalid email or password");
+      navigate("/dashboard");
+    } catch (error: any) {
+      console.error("Login error:", error);
+      
+      // Handle specific Supabase errors
+      if (error.message) {
+        if (error.message.includes("Invalid login credentials")) {
+          setError("Email atau password salah");
+        } else if (error.message.includes("Email not confirmed")) {
+          setError("Silakan verifikasi email Anda terlebih dahulu");
+        } else if (error.message.includes("Too many requests")) {
+          setError("Terlalu banyak percobaan. Silakan coba lagi nanti");
+        } else {
+          setError(error.message);
+        }
+      } else {
+        setError("Terjadi kesalahan saat masuk. Silakan coba lagi.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -32,43 +53,41 @@ export default function LoginForm() {
             <Input
               id="email"
               type="email"
-              placeholder="name@example.com"
+              placeholder="nama@contoh.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               className="h-12 rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+              disabled={isLoading}
             />
           </div>
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-700">Password</Label>
-              <Link to="/forgot-password" className="text-sm font-medium text-blue-600 hover:text-blue-500">
-                Forgot password?
-              </Link>
-            </div>
+            <Label htmlFor="password" className="text-sm font-medium text-gray-700">Password</Label>
             <Input
               id="password"
               type="password"
-              placeholder="Enter your password"
+              placeholder="Masukkan password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               className="h-12 rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+              disabled={isLoading}
             />
           </div>
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && <p className="text-sm text-red-500 bg-red-50 p-3 rounded-lg">{error}</p>}
+          
           <Button 
             type="submit" 
-            className="w-full h-12 rounded-full bg-black text-white hover:bg-gray-800 text-sm font-medium"
+            className="w-full h-12 rounded-full bg-blue-600 text-white hover:bg-blue-700 text-sm font-medium"
+            disabled={isLoading}
           >
-            Sign in
+            {isLoading ? "Masuk..." : "Masuk"}
           </Button>
-      
-      
+          
           <div className="text-sm text-center text-gray-600 mt-6">
-            Don't have an account?{" "}
+            Belum punya akun?{" "}
             <Link to="/signup" className="text-blue-600 hover:underline font-medium">
-              Sign up
+              Daftar sekarang
             </Link>
           </div>
         </form>

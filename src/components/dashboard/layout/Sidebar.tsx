@@ -3,13 +3,17 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
-  Home,
   LayoutDashboard,
-  Calendar,
+  Wrench,
+  Package,
+  FileText,
   Users,
   Settings,
   HelpCircle,
-  FolderKanban,
+  BarChart3,
+  Calendar,
+  Clock,
+  AlertTriangle,
 } from "lucide-react";
 
 interface NavItem {
@@ -17,6 +21,7 @@ interface NavItem {
   label: string;
   href?: string;
   isActive?: boolean;
+  badge?: number;
 }
 
 interface SidebarProps {
@@ -26,29 +31,35 @@ interface SidebarProps {
 }
 
 const defaultNavItems: NavItem[] = [
-  { icon: <Home size={20} />, label: "Home", isActive: true },
-  { icon: <LayoutDashboard size={20} />, label: "Dashboard" },
-  { icon: <FolderKanban size={20} />, label: "Projects" },
-  { icon: <Calendar size={20} />, label: "Calendar" },
-  { icon: <Users size={20} />, label: "Team" },
+  { icon: <LayoutDashboard size={20} />, label: "Dashboard", isActive: true },
+  { icon: <Wrench size={20} />, label: "Servis & Transaksi", badge: 8 },
+  { icon: <Package size={20} />, label: "Manajemen Inventori", badge: 5 },
+  { icon: <FileText size={20} />, label: "Laporan Keuangan" },
+  { icon: <Users size={20} />, label: "Pelanggan" },
+];
+
+const quickAccessItems: NavItem[] = [
+  { icon: <Clock size={16} />, label: "Jadwal Hari Ini" },
+  { icon: <AlertTriangle size={16} />, label: "Stok Menipis" },
+  { icon: <BarChart3 size={16} />, label: "Laporan Harian" },
 ];
 
 const defaultBottomItems: NavItem[] = [
-  { icon: <Settings size={20} />, label: "Settings" },
-  { icon: <HelpCircle size={20} />, label: "Help" },
+  { icon: <Settings size={20} />, label: "Pengaturan" },
+  { icon: <HelpCircle size={20} />, label: "Bantuan" },
 ];
 
 const Sidebar = ({
   items = defaultNavItems,
-  activeItem = "Home",
+  activeItem = "Dashboard",
   onItemClick = () => {},
 }: SidebarProps) => {
   return (
     <div className="w-[280px] h-full bg-white/80 backdrop-blur-md border-r border-gray-200 flex flex-col">
       <div className="p-6">
-        <h2 className="text-xl font-semibold mb-2 text-gray-900">Projects</h2>
+        <h2 className="text-xl font-semibold mb-2 text-gray-900">BengkelKu</h2>
         <p className="text-sm text-gray-500">
-          Manage your projects and tasks
+          Manajemen Bengkel Motor
         </p>
       </div>
 
@@ -62,6 +73,28 @@ const Sidebar = ({
               onClick={() => onItemClick(item.label)}
             >
               <span className={`${item.label === activeItem ? 'text-blue-600' : 'text-gray-500'}`}>{item.icon}</span>
+              <span className="flex-1 text-left">{item.label}</span>
+              {item.badge && (
+                <span className="bg-red-500 text-white text-xs rounded-full px-2 py-0.5 min-w-[20px] h-5 flex items-center justify-center">
+                  {item.badge}
+                </span>
+              )}
+            </Button>
+          ))}
+        </div>
+
+        <Separator className="my-4 bg-gray-100" />
+
+        <div className="space-y-3">
+          <h3 className="text-xs font-medium px-4 py-1 text-gray-500 uppercase tracking-wider">Akses Cepat</h3>
+          {quickAccessItems.map((item) => (
+            <Button 
+              key={item.label}
+              variant="ghost" 
+              className="w-full justify-start gap-3 h-9 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100"
+              onClick={() => onItemClick(item.label)}
+            >
+              <span className="text-gray-500">{item.icon}</span>
               {item.label}
             </Button>
           ))}
@@ -70,18 +103,18 @@ const Sidebar = ({
         <Separator className="my-4 bg-gray-100" />
 
         <div className="space-y-3">
-          <h3 className="text-xs font-medium px-4 py-1 text-gray-500 uppercase tracking-wider">Filters</h3>
+          <h3 className="text-xs font-medium px-4 py-1 text-gray-500 uppercase tracking-wider">Status</h3>
           <Button variant="ghost" className="w-full justify-start gap-3 h-9 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">
             <span className="h-2 w-2 rounded-full bg-green-500"></span>
-            Active
+            Servis Aktif (8)
+          </Button>
+          <Button variant="ghost" className="w-full justify-start gap-3 h-9 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">
+            <span className="h-2 w-2 rounded-full bg-orange-500"></span>
+            Menunggu Suku Cadang (3)
           </Button>
           <Button variant="ghost" className="w-full justify-start gap-3 h-9 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">
             <span className="h-2 w-2 rounded-full bg-red-500"></span>
-            High Priority
-          </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3 h-9 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">
-            <span className="h-2 w-2 rounded-full bg-yellow-500"></span>
-            In Progress
+            Stok Kritis (5)
           </Button>
         </div>
       </ScrollArea>
